@@ -145,6 +145,7 @@ test/TAGS
 
 docker/from-source/instdir
 docker/from-source/builddir
+/.local/collabora-build
 
 ios/Mobile/Info.plist
 ios/Mobile/Fonts
@@ -218,9 +219,11 @@ Makecache
 .ai
 .ai-cache
 *.ai.md
+AGENTS.md
 CLAUDE.md
 claude.log
 .claude
+.agents/
 .cursor
 .cursorignore
 .copilot

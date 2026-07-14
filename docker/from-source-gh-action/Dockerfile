@@ -1,9 +1,17 @@
 FROM ubuntu:24.04 AS builder
 
-ENV CORE_ASSETS=https://github.com/CollaboraOnline/online/releases/download/for-code-assets/core-co-26.04-assets.tar.gz
+ARG CORE_ASSETS=https://github.com/GusRz/azentro-collabora-build-assets/releases/download/for-code-assets/core-co-25.04-assets.tar.gz
+ARG CORE_REPO=https://github.com/GusRz/azentro-collabora-core-mirror.git
+ARG COLLABORA_ONLINE_REPO=https://github.com/GusRz/azentro-collabora-online-mirror.git
+ARG POCO_URL=https://github.com/GusRz/azentro-collabora-build-assets/raw/main/poco-1.12.5p2-all.tar.gz
+
+ENV CORE_ASSETS=${CORE_ASSETS}
+ENV CORE_REPO=${CORE_REPO}
 ENV BUILDDIR=/build
-ENV COLLABORA_ONLINE_BRANCH=main
+ENV COLLABORA_ONLINE_REPO=${COLLABORA_ONLINE_REPO}
+ENV COLLABORA_ONLINE_BRANCH=azentro-online-co-25.04-3847fbc
 ENV ONLINE_EXTRA_BUILD_OPTIONS=--enable-experimental
+ENV POCO_URL=${POCO_URL}
 
 WORKDIR /build
 
@@ -15,9 +23,10 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get update && \
     fonts-wqy-zenhei fonts-wqy-microhei fonts-droid-fallback \
     fonts-noto-cjk \
     libpoco-dev python3-polib libcap-dev npm \
-    libpam-dev libzstd-dev wget git build-essential libtool \
-    libcap2-bin python3-lxml libpng-dev libcppunit-dev \
-    pkg-config fontconfig snapd chromium-browser \
+    libpam-dev libzstd-dev wget git build-essential libtool libkrb5-dev \
+    libcap2-bin python3-lxml libpng-dev libcppunit-dev libfontconfig1-dev \
+    libnss3-dev libnspr4-dev \
+    pkg-config fontconfig snapd chromium-browser gettext \
     rsync curl \
     # core build dependencies, only those that are needed for LOKit
     git build-essential zip ccache autoconf gperf nasm xsltproc flex bison
@@ -29,7 +38,8 @@ RUN mkdir -p $BUILDDIR
 # Build poco separately to cache it
 ADD https://pocoproject.org/releases/poco-1.12.5p2/poco-1.12.5p2-all.tar.gz /build/builddir/poco-1.12.5p2-all.tar.gz
 
-RUN cd builddir && tar xf poco-1.12.5p2-all.tar.gz && cd poco-1.12.5p2-all/ && \
+RUN cd builddir && rm -f poco-1.12.5p2-all.tar.gz && wget "$POCO_URL" -O poco-1.12.5p2-all.tar.gz && \
+    tar xf poco-1.12.5p2-all.tar.gz && cd poco-1.12.5p2-all/ && \
     ./configure --static --no-tests --no-samples --no-sharedlibs --cflags="-fPIC" --omit=Zip,Data,Data/SQLite,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,PageCompiler,Redis,Encodings,ActiveRecord --prefix=$BUILDDIR/poco && \
     make -j $(nproc) && \
     make install

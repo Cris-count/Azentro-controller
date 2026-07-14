@@ -5,11 +5,14 @@
 
 # -- Available env vars --
 # * CORE_ASSETS  - which prebuilt assets to build in core
+# * CORE_REPO - which git repo to clone core from when CORE_ASSETS is not set
 # * CORE_BRANCH  - which branch to build in core
 # * COLLABORA_ONLINE_REPO - which git repo to clone online from
 # * COLLABORA_ONLINE_BRANCH - which branch to build in online
 # * CORE_BUILD_TARGET - which make target to run (in core repo)
 # * ONLINE_EXTRA_BUILD_OPTIONS - extra build options for online
+# * POCO_URL - where to download Poco from
+# * VERIFY_OWNED_INPUTS_ONLY - if set, print resolved inputs and stop before build
 
 if [ -z "$CORE_ASSETS" ]; then
   if [ -z "$CORE_BRANCH" ]; then
@@ -20,11 +23,16 @@ else
   echo "Building from core assets $CORE_ASSETS"
 fi;
 
+if [ -z "$CORE_REPO" ]; then
+  CORE_REPO="https://github.com/GusRz/azentro-collabora-core-mirror.git"
+fi;
+echo "Building core from '$CORE_REPO'"
+
 if [ -z "$COLLABORA_ONLINE_REPO" ]; then
-  COLLABORA_ONLINE_REPO="https://github.com/CollaboraOnline/online.git"
+  COLLABORA_ONLINE_REPO="https://github.com/GusRz/azentro-collabora-online-mirror.git"
 fi;
 if [ -z "$COLLABORA_ONLINE_BRANCH" ]; then
-  COLLABORA_ONLINE_BRANCH="main"
+  COLLABORA_ONLINE_BRANCH="azentro-online-co-25.04-3847fbc"
 fi;
 echo "Building online branch '$COLLABORA_ONLINE_BRANCH' from '$COLLABORA_ONLINE_REPO'"
 
@@ -33,9 +41,24 @@ if [ -z "$CORE_BUILD_TARGET" ]; then
 fi;
 echo "LOKit (core) build target: '$CORE_BUILD_TARGET'"
 
+if [ -z "$POCO_URL" ]; then
+  POCO_URL="https://github.com/GusRz/azentro-collabora-build-assets/raw/main/poco-1.12.5p2-all.tar.gz"
+fi;
+echo "Using Poco archive '$POCO_URL'"
+
 SRCDIR=$(realpath `dirname $0`)
 INSTDIR="$SRCDIR/instdir"
 BUILDDIR="$SRCDIR/builddir"
+
+if [ -n "$VERIFY_OWNED_INPUTS_ONLY" ]; then
+  echo "Resolved owned inputs:"
+  echo "  CORE_ASSETS=$CORE_ASSETS"
+  echo "  CORE_REPO=$CORE_REPO"
+  echo "  COLLABORA_ONLINE_REPO=$COLLABORA_ONLINE_REPO"
+  echo "  COLLABORA_ONLINE_BRANCH=$COLLABORA_ONLINE_BRANCH"
+  echo "  POCO_URL=$POCO_URL"
+  exit 0
+fi
 
 mkdir -p "$BUILDDIR"
 cd "$BUILDDIR"
@@ -46,7 +69,7 @@ mkdir -p "$INSTDIR"
 ##### build static poco #####
 
 if test ! -f poco/lib/libPocoFoundation.a ; then
-    wget https://pocoproject.org/releases/poco-1.12.5p2/poco-1.12.5p2-all.tar.gz
+    wget "$POCO_URL" -O poco-1.12.5p2-all.tar.gz
     tar -xzf poco-1.12.5p2-all.tar.gz
     cd poco-1.12.5p2-all/
     ./configure --static --no-tests --no-samples --no-sharedlibs --cflags="-fPIC" --omit=Zip,Data,Data/SQLite,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,PageCompiler,Redis,Encodings,ActiveRecord --prefix=$BUILDDIR/poco
@@ -62,10 +85,10 @@ fi
 # only if CORE_ASSETS is not set
 if [ -z "$CORE_ASSETS" ]; then
   if test ! -d core ; then
-    git clone https://git.libreoffice.org/core || exit 1
+    git clone "$CORE_REPO" core || exit 1
   fi
 
-  ( cd core && git fetch --all && git checkout $CORE_BRANCH && ./g pull -r ) || exit 1
+  ( cd core && git fetch --all && git checkout "$CORE_BRANCH" && ./g pull -r ) || exit 1
 else
   mkdir -p core
   ( cd core/ && wget "$CORE_ASSETS" -O core-assets.tar.xz && tar -xzf core-assets.tar.xz && rm core-assets.tar.xz) || exit 1
@@ -77,7 +100,12 @@ if test ! -d online ; then
   git clone --depth=1 --branch $COLLABORA_ONLINE_BRANCH "$COLLABORA_ONLINE_REPO" online || exit 1
 fi
 
-( cd online && git fetch --all && git checkout -f $COLLABORA_ONLINE_BRANCH && git clean -f -d && git pull -r ) || exit 1
+ONLINE_REF_TYPE=$(git ls-remote --heads "$COLLABORA_ONLINE_REPO" "$COLLABORA_ONLINE_BRANCH")
+if [ -n "$ONLINE_REF_TYPE" ]; then
+  ( cd online && git fetch --all && git checkout -f $COLLABORA_ONLINE_BRANCH && git clean -f -d && git pull -r ) || exit 1
+else
+  ( cd online && git fetch --tags && git checkout -f $COLLABORA_ONLINE_BRANCH && git clean -f -d ) || exit 1
+fi
 
 ##### LOKit (core) #####
 

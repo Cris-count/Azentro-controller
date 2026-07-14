@@ -41,12 +41,49 @@ The brand package of CODE is not open source. To build an image without it:
    cd from-packages
    docker build --no-cache --build-arg type=key -t mydomain/cool .
 
-5. Build Collabora Online from master branch (from source code)
+5. Build Collabora Online from source code with the canonical Docker flow
 
-   cd from-source
-   ./build.sh
+   cd from-source-gh-action
+   docker build -t mydomain/collaboraonline .
 
-Check build.sh for more build options!
+Check `from-source-gh-action/README.md` for more build options.
+
+The canonical stable flow is Docker-only and shared with GitHub Actions. It is
+meant to reproduce the historical `12a6746` contract:
+
+- `online` is taken from this repository checkout
+- `core` is expected through a prebuilt `CORE_ASSETS` tarball from `GusRz/azentro-collabora-build-assets`
+- `online` is cloned inside the build from `GusRz/azentro-collabora-online-mirror` using a frozen compatibility tag
+- `core` source is only used if `CORE_ASSETS` is explicitly unset, and then it comes from `GusRz/azentro-collabora-core-mirror`
+- Poco is downloaded inside the Docker build from `GusRz/azentro-collabora-build-assets`
+
+Run the stable local build:
+
+   cd from-source-gh-action
+   bash verify-owned-inputs.sh
+   docker build -t mydomain/collaboraonline .
+
+You can still override the defaults for special cases:
+
+- `CORE_ASSETS`, `CORE_REPO`, `POCO_URL`, `COLLABORA_ONLINE_REPO` as source overrides
+
+Example:
+
+   cd from-source-gh-action
+   docker build \
+     --build-arg CORE_ASSETS=https://github.com/GusRz/azentro-collabora-build-assets/releases/download/for-code-assets/core-co-25.04-assets.tar.gz \
+     --build-arg COLLABORA_ONLINE_REPO=https://github.com/GusRz/azentro-collabora-online-mirror.git \
+     --build-arg COLLABORA_ONLINE_BRANCH=azentro-online-co-25.04-3847fbc \
+     --build-arg CORE_REPO=https://github.com/GusRz/azentro-collabora-core-mirror.git \
+     --build-arg POCO_URL=https://github.com/GusRz/azentro-collabora-build-assets/raw/main/poco-1.12.5p2-all.tar.gz \
+     -t mydomain/collaboraonline .
+
+Organization-owned defaults used by the local stable flow:
+
+- `GusRz/azentro-collabora-online-mirror` for the `online` repo source of truth
+- `GusRz/azentro-collabora-core-mirror` for the optional source-build path of `core`
+- `GusRz/azentro-collabora-build-assets` for `CORE_ASSETS` and Poco
+- `ghcr.io/gusrz/azentro-collabora-online` as the publication target in GitHub Actions
 
 
 Usage
