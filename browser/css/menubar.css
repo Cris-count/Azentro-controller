@@ -34,9 +34,12 @@
 	position: relative;
 	width: 30px;
 	height: 30px;
-	background-size: 16px 16px;
-	background-repeat: no-repeat;
-	background-position: center;
+	/* !important: .lo-menu a:hover/:focus/:active set the "background" shorthand,
+	   which resets these sub-properties to their initial values (repeat/auto) and
+	   makes the logo image tile instead of showing once. */
+	background-size: 16px 16px !important;
+	background-repeat: no-repeat !important;
+	background-position: center !important;
 }
 
 .document-title {
