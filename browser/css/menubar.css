@@ -40,6 +40,11 @@
 	background-size: 16px 16px !important;
 	background-repeat: no-repeat !important;
 	background-position: center !important;
+	/* !important: .lo-menu a/:hover/:focus/:active set text-menu-item padding
+	   (5px 22px on hover, meant for word labels like "File"), which grows this
+	   fixed-size square icon into a wide box and visibly shifts the rest of the
+	   menu. Keep the icon's own box size constant across all states. */
+	padding: 8px !important;
 }
 
 .document-title {
