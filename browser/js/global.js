@@ -60,7 +60,8 @@ class BrowserProperties {
 
 		let win = navigator.platform.indexOf('Win') === 0;
 
-		let mobile = typeof orientation !== 'undefined' || ua.indexOf('mobile') !== -1;
+		let mobile = typeof orientation !== 'undefined' || ua.indexOf('mobile') !== -1
+			|| document.documentElement.clientWidth < 768;
 		let msPointer = !global.PointerEvent && global.MSPointerEvent;
 		let pointer = (global.PointerEvent && navigator.pointerEnabled && navigator.maxTouchPoints) || msPointer;
 
@@ -177,7 +178,7 @@ class BrowserProperties {
 					return true;
 				}
 
-				return global.L.Browser.mobile && (screen.width < 768 || screen.height < 768);
+				return global.L.Browser.mobile && (document.documentElement.clientWidth < 768 || document.documentElement.clientHeight < 768);
 			},
 			// Mobile device with big screen size.
 			isTablet: function() {
