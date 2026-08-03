@@ -9,7 +9,7 @@ CORE_ASSETS="${CORE_ASSETS:-https://github.com/GusRz/azentro-collabora-build-ass
 CORE_REPO="${CORE_REPO:-https://github.com/GusRz/azentro-collabora-core-mirror.git}"
 CORE_BRANCH="${CORE_BRANCH:-distro/collabora/co-25.04}"
 COLLABORA_ONLINE_REPO="${COLLABORA_ONLINE_REPO:-https://github.com/GusRz/azentro-collabora-online-mirror.git}"
-COLLABORA_ONLINE_BRANCH="${COLLABORA_ONLINE_BRANCH:-azentro-online-co-25.04-56429c4}"
+COLLABORA_ONLINE_BRANCH="${COLLABORA_ONLINE_BRANCH:-azentro-online-co-25.04-abf7f23}"
 POCO_URL="${POCO_URL:-https://github.com/GusRz/azentro-collabora-build-assets/raw/main/poco-1.12.5p2-all.tar.gz}"
 IMAGE_REPOSITORY="${IMAGE_REPOSITORY:-ghcr.io/gusrz/azentro-collabora-online}"
 
