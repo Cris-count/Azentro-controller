@@ -1491,6 +1491,15 @@ class Menubar extends window.L.Control {
 		],
 	}
 
+	// Menu item ids permanently hidden across all doc types and screen sizes (desktop + mobile).
+	private static readonly ALWAYS_HIDDEN_ITEMS: string[] = [
+		'report-an-issue',
+		'serveraudit',
+		'about',
+		'fullscreen',
+		'toggledarktheme',
+	];
+
 	// Private properties
 	private _initialized: boolean = false;
 	private _hiddenItems: string[] = [];
@@ -1507,7 +1516,7 @@ class Menubar extends window.L.Control {
 	 */
 	onAdd(map: ReturnType<typeof window.L.Map>) {
 		this._initialized = false;
-		this._hiddenItems = [];
+		this._hiddenItems = Menubar.ALWAYS_HIDDEN_ITEMS.slice();
 		this._menubarCont = window.L.DomUtil.get('main-menu');
 		this._isFileODF = true;
 		this._map = map;
