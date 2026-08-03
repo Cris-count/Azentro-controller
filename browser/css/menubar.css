@@ -20,7 +20,7 @@
 }
 /*avoid multiple document-headers in readonly mode*/
 .main-nav.hasnotebookbar.readonly > #main-menu #document-header {
-	display: none;
+	display: none !important;
 }
 
 /* hide document-header to free up space when using narrow windows */
