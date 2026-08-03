@@ -1498,6 +1498,7 @@ class Menubar extends window.L.Control {
 		'about',
 		'fullscreen',
 		'toggledarktheme',
+		'online-help',
 	];
 
 	// Private properties
