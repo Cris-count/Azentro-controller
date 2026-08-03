@@ -2501,6 +2501,7 @@ class Menubar extends window.L.Control {
 	 */
 	private _createFileIcon(): void {
 		if (!(window.logoURL && window.logoURL == "none")) {
+			document.querySelectorAll('#document-header').forEach((el) => el.remove());
 			var liItem = window.L.DomUtil.create('li', '');
 			liItem.id = 'document-header';
 			liItem.setAttribute('role', 'menuitem');

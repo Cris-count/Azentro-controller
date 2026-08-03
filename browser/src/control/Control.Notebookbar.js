@@ -91,6 +91,7 @@ window.L.Control.Notebookbar = window.L.Control.extend({
 		document.getElementById('document-container').classList.add('notebookbar-active');
 
 		if (!window.logoURL || window.logoURL != "none") {
+			document.querySelectorAll('#document-header').forEach((el) => el.remove());
 			const docLogoHeader = window.L.DomUtil.create('div', '');
 			docLogoHeader.id = 'document-header';
 
