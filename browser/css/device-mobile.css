@@ -38,6 +38,7 @@ html[dir='rtl'] .sub-menu-arrow {
 	width: 42px !important;
 	position: relative;
 	z-index: 1003;
+	display: none !important;
 }
 .editmode-off {
 	background: url('images/lc_closedocmobile.svg') no-repeat center !important;
