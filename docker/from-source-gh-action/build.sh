@@ -32,7 +32,7 @@ if [ -z "$COLLABORA_ONLINE_REPO" ]; then
   COLLABORA_ONLINE_REPO="https://github.com/GusRz/azentro-collabora-online-mirror.git"
 fi;
 if [ -z "$COLLABORA_ONLINE_BRANCH" ]; then
-  COLLABORA_ONLINE_BRANCH="azentro-online-co-25.04-97c4732"
+  COLLABORA_ONLINE_BRANCH="azentro-online-co-25.04-1cb7768"
 fi;
 echo "Building online branch '$COLLABORA_ONLINE_BRANCH' from '$COLLABORA_ONLINE_REPO'"
 
